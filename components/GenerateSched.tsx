@@ -30,7 +30,6 @@ import { SortableItem } from "./SortableItem";
 const GenerateSched = () => {
   const [schedule, setSchedule] = useState<ParsedSchedule[]>([]);
   const [loading, setLoading] = useState(false);
-  const [title, setTitle] = useState("Class Schedule");
   const [isEditing, setIsEditing] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
   const [progress, setProgress] = useState(0);
@@ -136,7 +135,7 @@ const GenerateSched = () => {
 
       const link = document.createElement("a");
       link.href = dataUrl;
-      link.download = `${title || "schedule"}.png`;
+      link.download = "schedule.png";
       link.click();
       toast.success("Schedule saved as image!");
     } catch (error) {
@@ -279,18 +278,9 @@ const GenerateSched = () => {
             className="relative rounded-lg shadow-lg p-6"
           >
             <section className="space-y-10 max-w-sm lg:max-w-md  mx-auto">
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="text-center text-4xl lg:text-5xl xl:text-6xl text-white font-[family-name:var(--font-apricot)] mb-10 md:mb-14 bg-transparent   outline-none py-2 h-full w-full"
-                />
-              ) : (
-                <h1 className="text-center text-4xl  lg:text-5xl xl:text-6xl text-white font-[family-name:var(--font-apricot)] mb-10 md:mb-14 ">
-                  {title}
-                </h1>
-              )}
+              <h1 className="text-center text-4xl  lg:text-5xl xl:text-6xl text-white font-[family-name:var(--font-apricot)] mb-10 md:mb-14 ">
+                Class Schedule
+              </h1>
 
               {/* Buttons */}
               <div className="floating-buttons hide-when-exporting fixed bottom-0 right-6 z-50 flex flex-col items-end space-y-2">

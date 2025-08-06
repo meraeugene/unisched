@@ -70,7 +70,7 @@ export function SortableItem({
         )}
 
         {isEditing && (
-          <div className="flex lg:hidden gap-2 mb-1">
+          <div className="flex lg:hidden gap-1 mb-1">
             <button
               onClick={() => moveEntry(index, -1)}
               title="Move up"
@@ -78,12 +78,21 @@ export function SortableItem({
             >
               <FaCaretUp />
             </button>
+
             <button
               onClick={() => moveEntry(index, 1)}
               title="Move down"
               className="w-4 h-4 flex items-center justify-center border border-blue-200 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 active:bg-blue-200 shadow transition"
             >
               <FaCaretDown />
+            </button>
+
+            <button
+              onClick={() => deleteScheduleEntry(item.id)}
+              className="text-red-400 cursor-pointer hover:text-red-500"
+              title="Delete class"
+            >
+              <MdDelete size={18} />
             </button>
           </div>
         )}
