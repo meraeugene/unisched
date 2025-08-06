@@ -133,7 +133,7 @@ export default function Home() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
           viewport={{ once: true }}
-          href="mailto:your-email@example.com"
+          href="mailto: villalon.andrew123@gmail.com"
           className="px-6 py-3 font-[family-name:var(--font-handy)] tracking-widest bg-blue-600 text-lg text-white rounded-full hover:bg-blue-700 transition"
         >
           Contact Us
