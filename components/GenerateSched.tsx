@@ -67,7 +67,7 @@ const GenerateSched = () => {
         .replace(/\s{2,}/g, " ") // remove extra spaces
         .trim();
 
-      setProgress(95);
+      setProgress(99);
       setLoadingMessage("Generating schedule with AI...");
 
       // Step 2: AI parsing
@@ -312,7 +312,7 @@ const GenerateSched = () => {
                   {isEditing ? (
                     <IoCheckmark className="text-xs" />
                   ) : (
-                    <FiEdit2 className="text-xs" />
+                    <FiEdit2 className="text-[11px]" />
                   )}
                 </button>
 
