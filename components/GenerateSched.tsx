@@ -7,6 +7,25 @@ import { daysOfWeek, groupSchedule } from "@/utils/groupSchedule";
 import { toast } from "sonner";
 import SupportedCOR from "./SupportedCOR";
 import { toPng } from "html-to-image";
+import { extractMinutes } from "@/utils/extractMinutes";
+import { IoMdAdd } from "react-icons/io";
+import { ScheduleWithId } from "@/types";
+import { IoCheckmark } from "react-icons/io5";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import { FiEdit2 } from "react-icons/fi";
+import {
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { SortableItem } from "./SortableItem";
 
 const GenerateSched = () => {
   const [schedule, setSchedule] = useState<ParsedSchedule[]>([]);
@@ -25,53 +44,59 @@ const GenerateSched = () => {
     formData.append("file", file);
 
     setLoading(true);
-    setProgress(0);
-
-    const simulatedSteps = [
-      { step: "Getting things ready...", progress: 5 },
-      { step: "Uploading your PDF...", progress: 15 },
-      { step: "Converting PDF to image...", progress: 25 },
-      { step: "Running OCR to extract text...", progress: 35 },
-      { step: "Reading and cleaning extracted text...", progress: 45 },
-      { step: "Identifying subject rows and schedule blocks...", progress: 55 },
-      { step: "Fixing the time and days...", progress: 63 },
-      { step: "Matching instructors and rooms...", progress: 70 },
-      { step: "Structuring data into schedule format...", progress: 77 },
-      { step: "Analyzing schedule with AI model...", progress: 84 },
-      { step: "Making sure everything looks good...", progress: 90 },
-      { step: "Getting it ready to show you...", progress: 93 },
-      { step: "Adding design and layout...", progress: 95 },
-      { step: "Optimizing for editability and clarity...", progress: 97 },
-      { step: "Displaying final schedule preview...", progress: 99 },
-    ];
+    setProgress(10); // Start
+    setLoadingMessage("Extracting text from pdf...");
 
     try {
-      // Start the fetch while progress is simulating
-      const fetchPromise = fetch("/api/generate-schedule", {
+      // Step 1: OCR
+      const ocrRes = await fetch("/api/ocr", {
         method: "POST",
         body: formData,
       });
 
-      // Simulate steps one by one with delay
-      for (const step of simulatedSteps) {
-        setLoadingMessage(step.step);
-        setProgress(step.progress);
-        await new Promise((resolve) => setTimeout(resolve, 5000));
+      setProgress(40); // halfway through OCR
+
+      if (!ocrRes.ok) {
+        throw new Error("OCR failed");
       }
 
-      const res = await fetchPromise;
+      const ocrData = await ocrRes.json();
+      const extractedText = ocrData.text;
 
-      if (!res.ok) {
-        throw new Error("Upload failed");
+      const cleanedText = extractedText
+        .replace(/(\r\n|\r|\n)/g, " ") // collapse newlines
+        .replace(/\s{2,}/g, " ") // remove extra spaces
+        .trim();
+
+      setProgress(50);
+      setLoadingMessage("Generating schedule with AI...");
+
+      // Step 2: AI parsing
+      const genRes = await fetch("/api/generate-schedule", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: cleanedText }),
+      });
+
+      setProgress(80);
+
+      if (!genRes.ok) {
+        throw new Error("Failed to generate schedule");
       }
 
-      const data = await res.json();
+      const data = await genRes.json();
 
-      console.log(data.schedule);
+      data.schedule.sort(
+        (a: ScheduleWithId, b: ScheduleWithId) =>
+          extractMinutes(a.time) - extractMinutes(b.time)
+      );
+
       setSchedule(data.schedule);
       toast.success("Schedule generated successfully!");
-    } catch (err: unknown) {
-      console.error("Client Error:", err);
+
+      setProgress(100);
+    } catch (err) {
+      console.error("Error:", err);
       toast.error("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
@@ -116,6 +141,36 @@ const GenerateSched = () => {
       console.error("Export error", error);
       toast.error("Failed to export image.");
     }
+  };
+
+  const sensors = useSensors(useSensor(PointerSensor));
+
+  // Utility to get items by day (used in DnD sortable context)
+  const getItemsForDay = (day: string) =>
+    schedule.filter((item) => item.day === day).map((item) => item.id);
+
+  // Handler when drag ends
+  const handleDragEnd = (event: DragEndEvent, currentDay: string) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const currentItems = schedule.filter((s) => s.day === currentDay);
+    const oldIndex = currentItems.findIndex((item) => item.id === active.id);
+    const newIndex = currentItems.findIndex((item) => item.id === over.id);
+
+    const movedItems = arrayMove(currentItems, oldIndex, newIndex);
+
+    // Replace the reordered items into the full schedule
+    const newSchedule = [
+      ...schedule.filter((s) => s.day !== currentDay),
+      ...movedItems,
+    ];
+
+    setSchedule(newSchedule);
+  };
+
+  const deleteScheduleEntry = (id: string) => {
+    setSchedule((prev) => prev.filter((entry) => entry.id !== id));
   };
 
   return (
@@ -188,7 +243,7 @@ const GenerateSched = () => {
             }}
             className="relative rounded-lg shadow-lg p-6"
           >
-            <section className="space-y-8 max-w-md mx-auto">
+            <section className="space-y-10 max-w-sm lg:max-w-md  mx-auto">
               {isEditing ? (
                 <input
                   type="text"
@@ -221,15 +276,15 @@ const GenerateSched = () => {
                       toast.success("Schedule updated successfully!");
                     }
                   }}
-                  className={`w-12  cursor-pointer h-12 rounded-full font-[family-name:var(--font-handy)] text-base transition-colors duration-200 shadow-sm flex items-center justify-center
+                  className={`w-12  cursor-pointer h-12 rounded-full font-[family-name:var(--font-handy)] text-sm transition-colors duration-200 shadow-sm flex items-center justify-center
       ${
         isEditing
-          ? "bg-blue-100 text-blue-800 hover:bg-blue-200"
+          ? "bg-blue-200 text-blue-800 hover:bg-blue-200"
           : "bg-blue-50 text-blue-700 hover:bg-blue-100"
       }`}
                   title={isEditing ? "Done Editing" : "Edit Schedule"}
                 >
-                  {isEditing ? "✓" : "✎"}
+                  {isEditing ? <IoCheckmark /> : <FiEdit2 />}
                 </button>
 
                 <button
@@ -254,111 +309,65 @@ const GenerateSched = () => {
                     </div>
 
                     {/* Entries */}
-                    <div className="space-y-4 p-4 pt-6">
+                    <div
+                      // className="space-y-4  pt-6"
+                      className="flex flex-col gap-y-4 p-4 pt-6"
+                    >
                       {grouped[day].length > 0 ? (
-                        grouped[day].map((item, idx) => {
-                          const index = schedule.findIndex(
-                            (s) => s.id === item.id
-                          );
+                        <DndContext
+                          sensors={sensors}
+                          collisionDetection={closestCenter}
+                          onDragEnd={(event) => handleDragEnd(event, day)}
+                        >
+                          <SortableContext
+                            items={getItemsForDay(day)}
+                            strategy={verticalListSortingStrategy}
+                          >
+                            {grouped[day].map((item) => {
+                              const index = schedule.findIndex(
+                                (s) => s.id === item.id
+                              );
 
-                          return (
-                            <div
-                              key={idx}
-                              className="grid font-[family-name:var(--font-sans)] grid-cols-2 text-sm items-center gap-x-4"
-                            >
-                              {isEditing ? (
-                                <>
-                                  <div className="flex flex-col gap-2">
-                                    <input
-                                      className="border border-blue-300 bg-white rounded px-2 py-1 text-sm focus:outline-none text-blue-950 font-medium focus:ring-2 focus:ring-blue-400"
-                                      value={item.code}
-                                      onChange={(e) =>
-                                        updateScheduleField(
-                                          index,
-                                          "code",
-                                          e.target.value
-                                        )
-                                      }
-                                    />
-                                    <input
-                                      className="border border-blue-300 bg-white rounded px-2 py-1 text-sm focus:outline-none text-gray-700 focus:ring-2 focus:ring-blue-400"
-                                      value={item.subject}
-                                      onChange={(e) =>
-                                        updateScheduleField(
-                                          index,
-                                          "subject",
-                                          e.target.value
-                                        )
-                                      }
-                                    />
-                                  </div>
-                                  <div className="flex flex-col gap-2 text-right">
-                                    <input
-                                      className="border border-blue-300 bg-white rounded px-2 py-1 text-sm text-blue-600 font-medium focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                      value={item.time}
-                                      onChange={(e) =>
-                                        updateScheduleField(
-                                          index,
-                                          "time",
-                                          e.target.value
-                                        )
-                                      }
-                                    />
-                                    <input
-                                      className="border border-blue-300 bg-white rounded px-2 py-1 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                      value={item.room}
-                                      onChange={(e) =>
-                                        updateScheduleField(
-                                          index,
-                                          "room",
-                                          e.target.value
-                                        )
-                                      }
-                                    />
-                                    <input
-                                      className="border border-blue-300 bg-white rounded px-2 py-1 text-xs text-gray-600 italic focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                      value={item.instructor}
-                                      onChange={(e) =>
-                                        updateScheduleField(
-                                          index,
-                                          "instructor",
-                                          e.target.value
-                                        )
-                                      }
-                                      placeholder="Instructor name"
-                                    />
-                                  </div>
-                                </>
-                              ) : (
-                                <>
-                                  <div className="flex flex-col font-[family-name:var(--font-sans)]">
-                                    <span className="font-medium text-blue-950">
-                                      {item.code}
-                                    </span>
-                                    <span className="text-gray-700">
-                                      {item.subject}
-                                    </span>
-                                  </div>
-                                  <div className="flex flex-col text-right font-[family-name:var(--font-sans)]">
-                                    <span className="text-blue-600 font-medium">
-                                      {item.time}
-                                    </span>
-                                    <span className="text-gray-600">
-                                      {item.room}
-                                    </span>
-                                    <span className="text-gray-500 italic text-xs">
-                                      {item.instructor}
-                                    </span>
-                                  </div>
-                                </>
-                              )}
-                            </div>
-                          );
-                        })
+                              return (
+                                <SortableItem
+                                  key={item.id}
+                                  item={item}
+                                  deleteScheduleEntry={deleteScheduleEntry}
+                                  index={index}
+                                  isEditing={isEditing}
+                                  updateScheduleField={updateScheduleField}
+                                />
+                              );
+                            })}
+                          </SortableContext>
+                        </DndContext>
                       ) : (
                         <div className="text-gray-500 text-center italic font-[family-name:var(--font-sans)]">
                           No classes
                         </div>
+                      )}
+
+                      {isEditing && (
+                        <button
+                          onClick={() =>
+                            setSchedule((prev) => [
+                              ...prev,
+                              {
+                                id: Date.now().toString(),
+                                code: "",
+                                subject: "",
+                                day, // ← this ensures the entry goes to the correct day
+                                time: "",
+                                room: "",
+                                instructor: "TBA",
+                              },
+                            ])
+                          }
+                          className="mt-2 flex items-center justify-center gap-2 w-full rounded bg-blue-100 text-blue-700 cursor-pointer py-1 hover:bg-blue-200 transition-colors font-[family-name:var(--font-handy)]"
+                        >
+                          <IoMdAdd />
+                          Add class to {day}
+                        </button>
                       )}
                     </div>
                   </div>
