@@ -221,7 +221,7 @@ const GenerateSched = () => {
           </div>
         )}
 
-        {/* COR Example Preview */}
+        {/* Supported University CORS*/}
         {schedule.length === 0 && !loading && (
           <div className="flex flex-col items-center ">
             <SupportedCOR />
@@ -282,11 +282,11 @@ const GenerateSched = () => {
                 Class Schedule
               </h1>
 
-              {/* Buttons */}
+              {/* Action Buttons */}
               <div className="floating-buttons hide-when-exporting fixed bottom-0 right-6 z-50 flex flex-col items-end space-y-2">
                 <button
                   onClick={() => setSchedule([])}
-                  className="w-12 cursor-pointer  h-12 rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors duration-200 shadow-sm font-[family-name:var(--font-handy)]"
+                  className="w-12 cursor-pointer text-xs h-12 rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors duration-200 shadow-sm font-[family-name:var(--font-handy)]"
                   title="Reset Schedule"
                 >
                   ↻
@@ -310,7 +310,7 @@ const GenerateSched = () => {
                   title={isEditing ? "Done Editing" : "Edit Schedule"}
                 >
                   {isEditing ? (
-                    <IoCheckmark />
+                    <IoCheckmark className="text-xs" />
                   ) : (
                     <FiEdit2 className="text-xs" />
                   )}
@@ -321,7 +321,7 @@ const GenerateSched = () => {
                   className="w-12 cursor-pointer h-12 rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors duration-200 shadow-sm flex items-center justify-center font-[family-name:var(--font-handy)]"
                   title="Save Schedule as Image"
                 >
-                  <CiSaveDown2 />
+                  <CiSaveDown2 className="text-xs"/>
                 </button>
               </div>
 
