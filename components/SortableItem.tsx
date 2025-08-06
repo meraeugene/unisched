@@ -89,7 +89,7 @@ export function SortableItem({
 
             <button
               onClick={() => deleteScheduleEntry(item.id)}
-              className="w-4 h-4 flex items-center justify-center  text-red-500 hover:text-red-600 active:text-red-600 shadow transition"
+              className="w-4 h-4 flex items-center justify-center  text-red-500 hover:text-red-600 active:text-red-600  transition"
               title="Delete class"
             >
               <AiOutlineDelete />
