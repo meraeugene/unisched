@@ -2,7 +2,7 @@
 import { ScheduleEntry } from "@/types";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { MdDelete } from "react-icons/md";
+import { AiOutlineDelete } from "react-icons/ai";
 import { MdOutlineDragHandle } from "react-icons/md";
 import { FaCaretUp, FaCaretDown } from "react-icons/fa";
 import { motion } from "framer-motion";
@@ -64,7 +64,7 @@ export function SortableItem({
               className="text-red-400 cursor-pointer hover:text-red-500"
               title="Delete class"
             >
-              <MdDelete size={18} />
+              <AiOutlineDelete size={18} />
             </button>
           </div>
         )}
@@ -89,10 +89,10 @@ export function SortableItem({
 
             <button
               onClick={() => deleteScheduleEntry(item.id)}
-              className="text-red-400 cursor-pointer hover:text-red-500"
+              className="w-4 h-4 flex items-center justify-center  text-red-500 hover:text-red-600 active:text-red-600 shadow transition"
               title="Delete class"
             >
-              <MdDelete size={18} />
+              <AiOutlineDelete />
             </button>
           </div>
         )}

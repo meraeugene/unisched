@@ -200,7 +200,7 @@ const GenerateSched = () => {
         {schedule.length === 0 && !loading && (
           <div className=" text-blue-700 text-center  mb-0">
             <h1 className="font-[family-name:var(--font-handy)]  text-5xl font-extrabold">
-              Ai Sched Generator
+              AI Schedule
             </h1>
             <span className="text-blue-900 font-[family-name:var(--font-handy)] text-lg">
               {" "}

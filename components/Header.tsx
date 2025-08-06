@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
+import Link from "next/link";
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -41,34 +42,34 @@ const Header = () => {
               "   px-6 rounded-full shadow-lg backdrop-blur-md backdrop-saturate-150 transition-colors duration-300 ease-in-out flex items-center gap-6 justify-between",
               scrolled
                 ? "bg-white/30 border border-blue-200"
-                : "bg-white/60 border border-white/40"
+                : "bg-white/60 border border-blue-200"
             )}
           >
             {/* Logo */}
-            <h1 className="font-extrabold font-[family-name:var(--font-apricot)] text-blue-700 text-lg tracking-tight py-2 border-r border-blue-300 pr-6">
+            <h1 className="font-extrabold font-[family-name:var(--font-apricot)] text-blue-700 text-lg tracking-tight py-2 border-r border-blue-200 pr-6">
               UniSched
             </h1>
 
             {/* Menu */}
             <nav className="flex  font-[family-name:var(--font-handy)] space-x-4 text-base font-medium text-blue-600">
-              <a
+              <Link
                 href="#about"
                 className="hover:text-blue-900 transition-colors"
               >
-                About
-              </a>
-              <a
+                Home
+              </Link>
+              <Link
                 href="#universities"
                 className="hover:text-blue-900 transition-colors"
               >
                 Universities
-              </a>
-              <a
+              </Link>
+              <Link
                 href="#contact"
                 className="hover:text-blue-900 transition-colors"
               >
                 Contact
-              </a>
+              </Link>
             </nav>
           </div>
         </motion.div>
