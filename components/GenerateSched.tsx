@@ -15,6 +15,7 @@ import {
   DndContext,
   closestCenter,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   DragEndEvent,
@@ -36,6 +37,16 @@ const GenerateSched = () => {
   const [progress, setProgress] = useState(0);
   const scheduleRef = useRef<HTMLDivElement>(null);
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 150,
+        tolerance: 5,
+      },
+    })
+  );
+
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -44,8 +55,8 @@ const GenerateSched = () => {
     formData.append("file", file);
 
     setLoading(true);
-    setProgress(10); // Start
-    setLoadingMessage("Extracting text from pdf...");
+    setProgress(25);
+    setLoadingMessage("Processing your PDF...");
 
     try {
       // Step 1: OCR
@@ -53,8 +64,6 @@ const GenerateSched = () => {
         method: "POST",
         body: formData,
       });
-
-      setProgress(40); // halfway through OCR
 
       if (!ocrRes.ok) {
         throw new Error("OCR failed");
@@ -68,7 +77,7 @@ const GenerateSched = () => {
         .replace(/\s{2,}/g, " ") // remove extra spaces
         .trim();
 
-      setProgress(50);
+      setProgress(95);
       setLoadingMessage("Generating schedule with AI...");
 
       // Step 2: AI parsing
@@ -77,8 +86,6 @@ const GenerateSched = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: cleanedText }),
       });
-
-      setProgress(80);
 
       if (!genRes.ok) {
         throw new Error("Failed to generate schedule");
@@ -91,10 +98,11 @@ const GenerateSched = () => {
           extractMinutes(a.time) - extractMinutes(b.time)
       );
 
+      setProgress(95);
+      setLoadingMessage("Finalizing schedule...");
+
       setSchedule(data.schedule);
       toast.success("Schedule generated successfully!");
-
-      setProgress(100);
     } catch (err) {
       console.error("Error:", err);
       toast.error("An unexpected error occurred. Please try again.");
@@ -130,6 +138,9 @@ const GenerateSched = () => {
       const dataUrl = await toPng(scheduleRef.current, {
         cacheBust: true,
         filter: (node) => !node.classList?.contains("hide-when-exporting"),
+        // width: 1080,
+        // height: 1920,
+        pixelRatio: 2,
       });
 
       const link = document.createElement("a");
@@ -143,13 +154,9 @@ const GenerateSched = () => {
     }
   };
 
-  const sensors = useSensors(useSensor(PointerSensor));
-
-  // Utility to get items by day (used in DnD sortable context)
   const getItemsForDay = (day: string) =>
     schedule.filter((item) => item.day === day).map((item) => item.id);
 
-  // Handler when drag ends
   const handleDragEnd = (event: DragEndEvent, currentDay: string) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
@@ -160,7 +167,6 @@ const GenerateSched = () => {
 
     const movedItems = arrayMove(currentItems, oldIndex, newIndex);
 
-    // Replace the reordered items into the full schedule
     const newSchedule = [
       ...schedule.filter((s) => s.day !== currentDay),
       ...movedItems,
@@ -209,6 +215,9 @@ const GenerateSched = () => {
               These are the supported class schedule formats (COR) you can
               upload.
             </p>
+            <p className="mt-4 text-xs font-[family-name:var(--font-sans)] text-gray-700 max-w-[250px] mx-auto  text-center">
+              Please download the pdf before uploading.
+            </p>
           </div>
         )}
 
@@ -226,9 +235,15 @@ const GenerateSched = () => {
                 </span>
               )}
             </div>
-            <p className="font-medium text-xl  font-[family-name:var(--font-handy)]">
-              {loadingMessage}
-            </p>
+            <div className="text-center space-y-1">
+              <p className="font-medium text-xl  font-[family-name:var(--font-handy)]">
+                {loadingMessage}
+              </p>
+
+              <p className="font-medium text-xs mt-0  text-blue-600  font-[family-name:var(--font-sans)]">
+                Please wait while we process your schedule...
+              </p>
+            </div>
           </div>
         )}
 
@@ -241,7 +256,7 @@ const GenerateSched = () => {
               backgroundSize: "100% 100%",
               color: "black", // ensure text is readable
             }}
-            className="relative rounded-lg shadow-lg p-6"
+            className="relative touch-manipulation rounded-lg shadow-lg p-6"
           >
             <section className="space-y-10 max-w-sm lg:max-w-md  mx-auto">
               {isEditing ? (
@@ -249,7 +264,7 @@ const GenerateSched = () => {
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="text-center text-4xl lg:text-5xl xl:text-6xl text-white font-[family-name:var(--font-apricot)] mb-10 md:mb-14 focus:ring-2 focus:ring-blue-400 border border-blue-300 rounded   outline-none py-1 h-full w-full"
+                  className="text-center text-4xl lg:text-5xl xl:text-6xl text-white font-[family-name:var(--font-apricot)] mb-10 md:mb-14 focus:ring-2 focus:ring-blue-400 border border-blue-300 rounded   outline-none py-2 h-full w-full"
                 />
               ) : (
                 <h1 className="text-center text-4xl  lg:text-5xl xl:text-6xl text-white font-[family-name:var(--font-apricot)] mb-10 md:mb-14 ">
@@ -284,7 +299,11 @@ const GenerateSched = () => {
       }`}
                   title={isEditing ? "Done Editing" : "Edit Schedule"}
                 >
-                  {isEditing ? <IoCheckmark /> : <FiEdit2 />}
+                  {isEditing ? (
+                    <IoCheckmark />
+                  ) : (
+                    <FiEdit2 className="text-xs" />
+                  )}
                 </button>
 
                 <button

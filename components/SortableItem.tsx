@@ -36,10 +36,10 @@ export function SortableItem({
     <div
       ref={setNodeRef}
       style={style}
-      className="grid grid-cols-2 mb-0 gap-y-4  items-start  text-sm font-[family-name:var(--font-sans)] group"
+      className="grid grid-cols-2 mb-0 gap-y-4 gap-x-1  items-start  text-sm font-[family-name:var(--font-sans)] group "
     >
       {/* Left Column */}
-      <div className="flex flex-col  gap-1 relative">
+      <div className="flex flex-col  gap-1  relative">
         {isEditing && (
           <div className="absolute -top-6 left-0 flex gap-1 items-center ">
             <div
