@@ -45,12 +45,12 @@ const Header = () => {
             )}
           >
             {/* Logo */}
-            <h1 className="py-2 font-extrabold font-[family-name:var(--font-apricot)] text-blue-700 text-lg tracking-tight border-r border-blue-200 pr-6">
+            <h1 className="font-extrabold font-[family-name:var(--font-apricot)] text-blue-700 text-lg tracking-tight py-2 border-r border-blue-300 pr-6">
               UniSched
             </h1>
 
             {/* Menu */}
-            <nav className="flex font-[family-name:var(--font-handy)] space-x-4 text-base font-medium text-blue-600">
+            <nav className="flex  font-[family-name:var(--font-handy)] space-x-4 text-base font-medium text-blue-600">
               <a
                 href="#about"
                 className="hover:text-blue-900 transition-colors"

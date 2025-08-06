@@ -13,7 +13,7 @@ export default function Home() {
       {/* Hero Section */}
       <section
         id="about"
-        className=" pt-28 pb-20 px-8 flex flex-col min-h-screen items-center justify-center gap-10 relative z-20"
+        className="px-8 flex flex-col min-h-screen items-center justify-center gap-10 relative z-20"
       >
         {/* Optional gradient background */}
         <div
@@ -114,6 +114,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          transition={{ delay: 0.6 }}
           className="text-4xl font-extrabold font-[family-name:var(--font-apricot)] text-blue-700 mb-4"
         >
           Get in Touch
