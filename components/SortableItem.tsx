@@ -3,7 +3,9 @@ import { ScheduleEntry } from "@/types";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { MdDelete } from "react-icons/md";
-import { RxDragHandleDots2 } from "react-icons/rx";
+import { MdOutlineDragHandle } from "react-icons/md";
+import { FaCaretUp, FaCaretDown } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 interface SortableItemProps {
   item: ScheduleEntry;
@@ -15,6 +17,7 @@ interface SortableItemProps {
     value: string
   ) => void;
   deleteScheduleEntry: (id: string) => void;
+  moveEntry: (index: number, direction: -1 | 1) => void;
 }
 
 export function SortableItem({
@@ -23,6 +26,7 @@ export function SortableItem({
   isEditing,
   updateScheduleField,
   deleteScheduleEntry,
+  moveEntry,
 }: SortableItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: item.id });
@@ -33,22 +37,27 @@ export function SortableItem({
   };
 
   return (
-    <div
+    <motion.div
       ref={setNodeRef}
       style={style}
+      layout
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
       className="grid grid-cols-2 mb-0 gap-y-4 gap-x-1  items-start  text-sm font-[family-name:var(--font-sans)] group "
     >
       {/* Left Column */}
       <div className="flex flex-col  gap-1  relative">
         {isEditing && (
-          <div className="absolute -top-6 left-0 flex gap-1 items-center ">
+          <div className="absolute hidden lg:flex -top-6 left-0  gap-1 items-center ">
             <div
               {...attributes}
               {...listeners}
               className="cursor-grab text-gray-400 hover:text-gray-600"
               title="Drag to reorder"
             >
-              <RxDragHandleDots2 size={18} />
+              <MdOutlineDragHandle size={18} />
             </div>
             <button
               onClick={() => deleteScheduleEntry(item.id)}
@@ -56,6 +65,25 @@ export function SortableItem({
               title="Delete class"
             >
               <MdDelete size={18} />
+            </button>
+          </div>
+        )}
+
+        {isEditing && (
+          <div className="flex lg:hidden gap-2 mb-1">
+            <button
+              onClick={() => moveEntry(index, -1)}
+              title="Move up"
+              className="w-4 h-4 flex items-center justify-center border border-blue-200 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 active:bg-blue-200 shadow transition"
+            >
+              <FaCaretUp />
+            </button>
+            <button
+              onClick={() => moveEntry(index, 1)}
+              title="Move down"
+              className="w-4 h-4 flex items-center justify-center border border-blue-200 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 active:bg-blue-200 shadow transition"
+            >
+              <FaCaretDown />
             </button>
           </div>
         )}
@@ -126,6 +154,6 @@ export function SortableItem({
           </>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

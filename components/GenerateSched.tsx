@@ -15,7 +15,6 @@ import {
   DndContext,
   closestCenter,
   PointerSensor,
-  TouchSensor,
   useSensor,
   useSensors,
   DragEndEvent,
@@ -37,15 +36,7 @@ const GenerateSched = () => {
   const [progress, setProgress] = useState(0);
   const scheduleRef = useRef<HTMLDivElement>(null);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 150,
-        tolerance: 5,
-      },
-    })
-  );
+  const sensors = useSensors(useSensor(PointerSensor));
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -179,6 +170,30 @@ const GenerateSched = () => {
     setSchedule((prev) => prev.filter((entry) => entry.id !== id));
   };
 
+  const moveEntry = (index: number, direction: -1 | 1) => {
+    const entry = schedule[index];
+    const sameDayItems = schedule.filter((s) => s.day === entry.day);
+    const sameDayIndices = sameDayItems.map((item) =>
+      schedule.findIndex((s) => s.id === item.id)
+    );
+
+    const posInDay = sameDayIndices.indexOf(index);
+    const newPosInDay = posInDay + direction;
+
+    if (newPosInDay < 0 || newPosInDay >= sameDayIndices.length) {
+      return; // Do nothing if out of bounds
+    }
+
+    const targetIndex = sameDayIndices[newPosInDay];
+    const newSchedule = [...schedule];
+
+    const temp = newSchedule[index];
+    newSchedule[index] = newSchedule[targetIndex];
+    newSchedule[targetIndex] = temp;
+
+    setSchedule(newSchedule);
+  };
+
   return (
     <main className="min-h-screen     flex flex-col items-center justify-center  text-gray-900 overflow-hidden ">
       <div className="w-full   space-y-8 z-10 ">
@@ -236,12 +251,17 @@ const GenerateSched = () => {
               )}
             </div>
             <div className="text-center space-y-1">
-              <p className="font-medium text-xl  font-[family-name:var(--font-handy)]">
+              <p className="font-medium text-xl animate-pulse  font-[family-name:var(--font-handy)]">
                 {loadingMessage}
               </p>
 
-              <p className="font-medium text-xs mt-0  text-blue-600  font-[family-name:var(--font-sans)]">
-                Please wait while we process your schedule...
+              <p className="font-medium text-xs mt-0 max-w-sm  text-blue-600  font-[family-name:var(--font-sans)]">
+                Please wait while we process your schedule.
+              </p>
+
+              <p className="font-medium text-xs mt-2 max-w-xs  text-black/60 font-[family-name:var(--font-sans)]">
+                This schedule is AI-generated and may not be 100% accurate — but
+                don’t worry, you can review and edit it as needed.
               </p>
             </div>
           </div>
@@ -256,7 +276,7 @@ const GenerateSched = () => {
               backgroundSize: "100% 100%",
               color: "black", // ensure text is readable
             }}
-            className="relative touch-manipulation rounded-lg shadow-lg p-6"
+            className="relative rounded-lg shadow-lg p-6"
           >
             <section className="space-y-10 max-w-sm lg:max-w-md  mx-auto">
               {isEditing ? (
@@ -264,7 +284,7 @@ const GenerateSched = () => {
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="text-center text-4xl lg:text-5xl xl:text-6xl text-white font-[family-name:var(--font-apricot)] mb-10 md:mb-14 focus:ring-2 focus:ring-blue-400 border border-blue-300 rounded   outline-none py-2 h-full w-full"
+                  className="text-center text-4xl lg:text-5xl xl:text-6xl text-white font-[family-name:var(--font-apricot)] mb-10 md:mb-14 bg-transparent   outline-none py-2 h-full w-full"
                 />
               ) : (
                 <h1 className="text-center text-4xl  lg:text-5xl xl:text-6xl text-white font-[family-name:var(--font-apricot)] mb-10 md:mb-14 ">
@@ -354,6 +374,7 @@ const GenerateSched = () => {
                                   deleteScheduleEntry={deleteScheduleEntry}
                                   index={index}
                                   isEditing={isEditing}
+                                  moveEntry={moveEntry}
                                   updateScheduleField={updateScheduleField}
                                 />
                               );
