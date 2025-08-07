@@ -173,7 +173,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.6 }}
+          transition={{ delay: 0.3 }}
           className="text-4xl font-extrabold font-[family-name:var(--font-apricot)] text-blue-700 mb-4"
         >
           Get in Touch
@@ -181,7 +181,7 @@ export default function Home() {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
+          transition={{ delay: 0.4 }}
           viewport={{ once: true }}
           className="text-blue-900 text-lg  max-w-[250px] mx-auto  mb-8 font-[family-name:var(--font-handy)]"
         >
@@ -191,7 +191,7 @@ export default function Home() {
         <motion.a
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
+          transition={{ delay: 0.5 }}
           viewport={{ once: true }}
           href="mailto: villalon.andrew123@gmail.com"
           className="px-6 py-3 font-[family-name:var(--font-handy)] tracking-widest bg-blue-600 text-lg text-white rounded-full hover:bg-blue-700 transition"

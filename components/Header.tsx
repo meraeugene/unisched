@@ -59,10 +59,10 @@ const Header = () => {
                 Home
               </Link>
               <Link
-                href="#universities"
+                href="#themes"
                 className="hover:text-blue-900 transition-colors"
               >
-                Universities
+                Themes
               </Link>
               <Link
                 href="#contact"
