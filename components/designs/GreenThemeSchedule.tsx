@@ -86,7 +86,7 @@ const GreenThemeSchedule: React.FC<Props> = ({
       className="relative rounded-lg shadow-lg p-6"
     >
       <section className="space-y-10 max-w-sm lg:max-w-md mx-auto">
-        <h1 className="text-center text-5xl xl:text-6xl text-black font-[family-name:var(--font-handy)] mb-10 ">
+        <h1 className="text-center text-5xl xl:text-6xl text-black font-[family-name:var(--font-handy)] mb-8 md:mb-10 ">
           Class Schedule
         </h1>
 

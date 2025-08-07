@@ -252,7 +252,10 @@ const GenerateSched = () => {
             {/* Floating Buttons */}
             <div className="floating-buttons hide-when-exporting fixed bottom-0 right-6 z-50 flex flex-col items-end space-y-2">
               <button
-                onClick={() => setShowThemeModal(true)}
+                onClick={() => {
+                  setShowThemeModal(true);
+                  document.body.classList.add("overflow-hidden");
+                }}
                 className="w-12 flex flex-col items-center justify-center h-12 cursor-pointer rounded-full bg-white text-black hover:bg-gray-100 text-sm shadow-sm font-[family-name:var(--font-handy)]"
                 title="Change Theme"
               >
@@ -308,14 +311,17 @@ const GenerateSched = () => {
         )}
 
         {showThemeModal && (
-          <div className="fixed  inset-0 z-50 flex items-center justify-center bg-white/10 backdrop-blur-md p-4 ">
-            <div className="bg-white/30  border border-white/20 shadow-xl rounded-2xl p-6 w-full max-w-md backdrop-blur-md transition-all duration-300">
+          <div className="fixed  inset-0 z-50 flex items-center justify-center  backdrop-blur-2xl p-4 ">
+            <div className="bg-white/80  border border-white/20 shadow-xl rounded-2xl p-6 w-full max-w-md backdrop-blur-md transition-all duration-300">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-semibold text-gray-700 font-[family-name:var(--font-handy)]">
                   Choose a Schedule Theme
                 </h2>
                 <button
-                  onClick={() => setShowThemeModal(false)}
+                  onClick={() => {
+                    setShowThemeModal(false);
+                    document.body.classList.remove("overflow-hidden");
+                  }}
                   className="text-gray-600 cursor-pointer hover:text-gray-800 transition"
                   aria-label="Close"
                 >
@@ -328,6 +334,7 @@ const GenerateSched = () => {
                   onClick={() => {
                     setSelectedTheme("blue");
                     setShowThemeModal(false);
+                    document.body.classList.remove("overflow-hidden");
                   }}
                   className="flex font-[family-name:var(--font-apricot)] items-center justify-center gap-2 px-5 cursor-pointer py-3 rounded-lg bg-gradient-to-tr text-xl  from-blue-300 to-blue-500 text-white font-medium hover:scale-[1.03] hover:shadow-lg transition-all duration-200"
                 >
@@ -339,8 +346,9 @@ const GenerateSched = () => {
                   onClick={() => {
                     setSelectedTheme("green");
                     setShowThemeModal(false);
+                    document.body.classList.remove("overflow-hidden");
                   }}
-                  className="flex items-center cursor-pointer  font-[family-name:var(--font-handy)] text-xl justify-center gap-2 px-5 py-3 rounded-lg bg-gradient-to-tr from-green-300 to-green-500 text-black font-medium hover:scale-[1.03] hover:shadow-lg transition-all duration-200"
+                  className="flex items-center cursor-pointer  font-[family-name:var(--font-handy)] text-xl justify-center gap-2 px-5 py-3 rounded-lg bg-gradient-to-tr from-green-200 to-green-300 text-black font-medium hover:scale-[1.03] hover:shadow-lg transition-all duration-200"
                 >
                   <FaPalette />
                   Green Theme
