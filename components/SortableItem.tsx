@@ -6,9 +6,16 @@ import { AiOutlineDelete } from "react-icons/ai";
 import { MdOutlineDragHandle } from "react-icons/md";
 import { FaCaretUp, FaCaretDown } from "react-icons/fa";
 import { motion } from "framer-motion";
+import {
+  borderColorMap,
+  codeColorTextMap,
+  ringColorMap,
+  timeColorTextMap,
+} from "@/utils/schedColors";
 
 interface SortableItemProps {
   item: ScheduleEntry;
+  color: string;
   index: number;
   isEditing: boolean;
   updateScheduleField: (
@@ -27,6 +34,7 @@ export function SortableItem({
   updateScheduleField,
   deleteScheduleEntry,
   moveEntry,
+  color,
 }: SortableItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: item.id });
@@ -36,25 +44,36 @@ export function SortableItem({
     transition,
   };
 
+  const isDragging = !!transform;
+  const Component = isDragging ? "div" : motion.div;
+
+  const codeTextColor = codeColorTextMap[color] ?? "text-gray-900";
+  const timeTextColor = timeColorTextMap[color] ?? "text-gray-700";
+  const borderColor = borderColorMap[color] ?? "border-gray-300";
+  const ringColor = ringColorMap[color] ?? "focus:ring-gray-400";
+
   return (
-    <motion.div
+    <Component
       ref={setNodeRef}
       style={style}
-      layout
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      {...(!isDragging && {
+        layout: true,
+        initial: { opacity: 0, y: 10 },
+        animate: { opacity: 1, y: 0 },
+        exit: { opacity: 0, y: -10 },
+        transition: { type: "spring", stiffness: 300, damping: 30 },
+      })}
       className="grid grid-cols-2 mb-0 gap-y-4 gap-x-1  items-start  text-sm font-[family-name:var(--font-sans)] group "
     >
       {/* Left Column */}
       <div className="flex flex-col  gap-1  relative">
+        {/* DESKTOP DRAG AND DROP SORT */}
         {isEditing && (
-          <div className="absolute hidden lg:flex -top-6 left-0  gap-1 items-center ">
+          <div className="absolute hidden lg:flex top-0 -left-16  gap-1 items-center ">
             <div
               {...attributes}
               {...listeners}
-              className="cursor-grab text-gray-400 hover:text-gray-600"
+              className="cursor-grab text-black hover:text-gray-600"
               title="Drag to reorder"
             >
               <MdOutlineDragHandle size={18} />
@@ -69,12 +88,13 @@ export function SortableItem({
           </div>
         )}
 
+        {/* MOBILE SORT */}
         {isEditing && (
           <div className="flex lg:hidden gap-1 mb-1">
             <button
               onClick={() => moveEntry(index, -1)}
               title="Move up"
-              className="w-4 h-4 flex items-center justify-center border border-blue-200 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 active:bg-blue-200 shadow transition"
+              className="w-4 h-4 flex items-center justify-center border border-gray-200 rounded-full bg-gray-50 text-gray-500 hover:bg-gray-100 active:bg-gray-200 shadow transition"
             >
               <FaCaretUp />
             </button>
@@ -82,7 +102,7 @@ export function SortableItem({
             <button
               onClick={() => moveEntry(index, 1)}
               title="Move down"
-              className="w-4 h-4 flex items-center justify-center border border-blue-200 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 active:bg-blue-200 shadow transition"
+              className="w-4 h-4 flex items-center justify-center border border-gray-200 rounded-full bg-gray-50 text-gray-500 hover:bg-gray-100 active:bg-gray-200 shadow transition"
             >
               <FaCaretDown />
             </button>
@@ -100,7 +120,7 @@ export function SortableItem({
         {isEditing ? (
           <>
             <input
-              className="border border-blue-300 bg-white rounded px-2 py-1 text-sm focus:outline-none text-blue-950 font-medium focus:ring-2 focus:ring-blue-400"
+              className={`border  bg-white rounded px-2 py-1 text-sm focus:outline-none  font-medium focus:ring-2 ${codeTextColor} ${borderColor} ${ringColor}`}
               value={item.code}
               placeholder="Code"
               onChange={(e) =>
@@ -108,7 +128,7 @@ export function SortableItem({
               }
             />
             <input
-              className="border border-blue-300 bg-white rounded px-2 py-1 text-sm focus:outline-none text-gray-700 focus:ring-2 focus:ring-blue-400"
+              className={`border  bg-white rounded px-2 py-1 text-sm focus:outline-none text-gray-700 focus:ring-2  ${borderColor} ${ringColor}`}
               value={item.subject}
               placeholder="Subject"
               onChange={(e) =>
@@ -118,7 +138,7 @@ export function SortableItem({
           </>
         ) : (
           <>
-            <span className="font-medium text-blue-950">{item.code}</span>
+            <span className={`font-medium ${codeTextColor}`}>{item.code}</span>
             <span className="text-gray-700">{item.subject}</span>
           </>
         )}
@@ -129,7 +149,7 @@ export function SortableItem({
         {isEditing ? (
           <>
             <input
-              className="border border-blue-300 bg-white rounded px-2 py-1 text-sm text-blue-600 font-medium focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className={`border  bg-white rounded px-2 py-1 text-sm  font-medium focus:outline-none focus:ring-2  ${timeTextColor} ${borderColor} ${ringColor}`}
               value={item.time}
               placeholder="Time"
               onChange={(e) =>
@@ -137,7 +157,7 @@ export function SortableItem({
               }
             />
             <input
-              className="border border-blue-300 bg-white rounded px-2 py-1 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className={`border  bg-white rounded px-2 py-1 text-sm text-gray-600 focus:outline-none focus:ring-2 ${borderColor} ${ringColor}`}
               value={item.room}
               placeholder="Room"
               onChange={(e) =>
@@ -145,8 +165,8 @@ export function SortableItem({
               }
             />
             <input
-              className="border border-blue-300 bg-white rounded px-2 py-1 text-xs text-gray-600 italic focus:outline-none focus:ring-2 focus:ring-blue-400"
-              value={item.instructor}
+              className={`border  bg-white rounded px-2 py-1 text-xs text-gray-600 italic focus:outline-none focus:ring-2  ${borderColor} ${ringColor}`}
+              value={item.instructor ?? ""}
               onChange={(e) =>
                 updateScheduleField(index, "instructor", e.target.value)
               }
@@ -155,7 +175,9 @@ export function SortableItem({
           </>
         ) : (
           <>
-            <span className="text-blue-600 font-medium">{item.time}</span>
+            <span className={` ${timeTextColor} font-medium `}>
+              {item.time}
+            </span>
             <span className="text-gray-600">{item.room}</span>
             <span className="text-gray-500 italic text-xs">
               {item.instructor}
@@ -163,6 +185,6 @@ export function SortableItem({
           </>
         )}
       </div>
-    </motion.div>
+    </Component>
   );
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import Link from "next/link";
@@ -98,6 +99,64 @@ export default function Home() {
         </motion.div>
       </section>
 
+      {/* Themes Section */}
+      <section
+        id="themes"
+        className="py-20 px-4 md:px-8 mx-auto text-center relative z-10"
+      >
+        <div
+          className="absolute inset-1 rounded-lg -z-10"
+          style={{
+            backgroundImage: `radial-gradient(120% 120% at 50% 70%, #ffffff 55%, #c7d2fe 100%)`,
+          }}
+        />
+
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          viewport={{ once: true }}
+          className="text-4xl font-extrabold font-[family-name:var(--font-apricot)] text-blue-700 mb-6"
+        >
+          Pick Your Style
+        </motion.h2>
+
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          viewport={{ once: true }}
+          className="text-blue-900 text-lg max-w-md mx-auto mb-8 font-[family-name:var(--font-handy)]"
+        >
+          Explore our available themes to personalize your class schedule. Pick
+          your fave — the choice is yours.
+        </motion.p>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          viewport={{ once: true }}
+          className="grid grid-cols-1 max-w-4xl  mx-auto md:grid-cols-2 gap-6"
+        >
+          {[{ img: "/themes/blue.png" }, { img: "/themes/green.png" }].map(
+            (theme, idx) => (
+              <div
+                key={idx}
+                className="bg-white rounded-xl shadow hover:shadow-md transition overflow-hidden" // control height
+              >
+                <div className="relative w-full h-full">
+                  <img
+                    src={theme.img}
+                    alt={`Theme ${idx + 1}`}
+                    className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
+                  />
+                </div>
+              </div>
+            )
+          )}
+        </motion.div>
+      </section>
+
       {/* Contact Section */}
       <section
         id="contact"
@@ -126,7 +185,8 @@ export default function Home() {
           viewport={{ once: true }}
           className="text-blue-900 text-lg  max-w-[250px] mx-auto  mb-8 font-[family-name:var(--font-handy)]"
         >
-          Have questions, feedback, or school formats to suggest?
+          Got questions, feedback, theme ideas, or want your university added?
+          Let us know!
         </motion.p>
         <motion.a
           initial={{ opacity: 0, y: 20 }}

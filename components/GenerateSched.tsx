@@ -1,31 +1,20 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { CiSaveDown2 } from "react-icons/ci";
 import { ParsedSchedule } from "@/utils/parseScheduleFromText";
 import { daysOfWeek, groupSchedule } from "@/utils/groupSchedule";
 import { toast } from "sonner";
 import SupportedCOR from "./SupportedCOR";
 import { toPng } from "html-to-image";
 import { extractMinutes } from "@/utils/extractMinutes";
-import { IoMdAdd } from "react-icons/io";
 import { ScheduleWithId } from "@/types";
-import { IoCheckmark } from "react-icons/io5";
-import {
-  DndContext,
-  closestCenter,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from "@dnd-kit/core";
+import BlueThemeSchedule from "./designs/BlueThemeSchedule";
+import GreenThemeSchedule from "./designs/GreenThemeSchedule";
+import { IoCheckmark, IoColorPaletteOutline } from "react-icons/io5";
 import { FiEdit2 } from "react-icons/fi";
-import {
-  arrayMove,
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { SortableItem } from "./SortableItem";
+import { FaPalette } from "react-icons/fa";
+import { IoClose } from "react-icons/io5";
+import { CiSaveDown2 } from "react-icons/ci";
 
 const GenerateSched = () => {
   const [schedule, setSchedule] = useState<ParsedSchedule[]>([]);
@@ -34,8 +23,8 @@ const GenerateSched = () => {
   const [loadingMessage, setLoadingMessage] = useState("");
   const [progress, setProgress] = useState(0);
   const scheduleRef = useRef<HTMLDivElement>(null);
-
-  const sensors = useSensors(useSensor(PointerSensor));
+  const [selectedTheme, setSelectedTheme] = useState<"blue" | "green">("blue");
+  const [showThemeModal, setShowThemeModal] = useState(false);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -144,27 +133,6 @@ const GenerateSched = () => {
     }
   };
 
-  const getItemsForDay = (day: string) =>
-    schedule.filter((item) => item.day === day).map((item) => item.id);
-
-  const handleDragEnd = (event: DragEndEvent, currentDay: string) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-
-    const currentItems = schedule.filter((s) => s.day === currentDay);
-    const oldIndex = currentItems.findIndex((item) => item.id === active.id);
-    const newIndex = currentItems.findIndex((item) => item.id === over.id);
-
-    const movedItems = arrayMove(currentItems, oldIndex, newIndex);
-
-    const newSchedule = [
-      ...schedule.filter((s) => s.day !== currentDay),
-      ...movedItems,
-    ];
-
-    setSchedule(newSchedule);
-  };
-
   const deleteScheduleEntry = (id: string) => {
     setSchedule((prev) => prev.filter((entry) => entry.id !== id));
   };
@@ -191,6 +159,18 @@ const GenerateSched = () => {
     newSchedule[targetIndex] = temp;
 
     setSchedule(newSchedule);
+  };
+
+  const sharedProps = {
+    schedule,
+    grouped,
+    daysOfWeek,
+    isEditing,
+    setSchedule,
+    updateScheduleField,
+    deleteScheduleEntry,
+    moveEntry,
+    scheduleRef,
   };
 
   return (
@@ -268,141 +248,105 @@ const GenerateSched = () => {
 
         {/* Generated Schedule */}
         {!loading && schedule.length > 0 && (
-          <div
-            ref={scheduleRef}
-            style={{
-              backgroundImage: `radial-gradient(125% 125% at 50% 90%, #ffffff 40%, #2563eb 100%)`,
-              backgroundSize: "100% 100%",
-              color: "black", // ensure text is readable
-            }}
-            className="relative rounded-lg shadow-lg p-6"
-          >
-            <section className="space-y-10 max-w-sm lg:max-w-md  mx-auto">
-              <h1 className="text-center text-4xl  lg:text-5xl xl:text-6xl text-white font-[family-name:var(--font-apricot)] mb-10 md:mb-14 ">
-                Class Schedule
-              </h1>
+          <>
+            {/* Floating Buttons */}
+            <div className="floating-buttons hide-when-exporting fixed bottom-0 right-6 z-50 flex flex-col items-end space-y-2">
+              <button
+                onClick={() => setShowThemeModal(true)}
+                className="w-12 flex flex-col items-center justify-center h-12 cursor-pointer rounded-full bg-white text-black hover:bg-gray-100 text-sm shadow-sm font-[family-name:var(--font-handy)]"
+                title="Change Theme"
+              >
+                <IoColorPaletteOutline />
+                <span className="text-xs text-gray-600">Theme</span>
+              </button>
 
-              {/* Action Buttons */}
-              <div className="floating-buttons hide-when-exporting fixed bottom-0 right-6 z-50 flex flex-col items-end space-y-2">
+              <button
+                onClick={() => setSchedule([])}
+                className="w-12 h-12   flex flex-col items-center justify-center  cursor-pointer rounded-full bg-white text-black hover:bg-gray-100 text-sm shadow-sm font-[family-name:var(--font-handy)]"
+                title="Reset Schedule"
+              >
+                ↻<span className="text-xs text-gray-600">Reset</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  const editingNow = !isEditing;
+                  setIsEditing(editingNow);
+                  if (!editingNow)
+                    toast.success("Schedule updated successfully!");
+                }}
+                className={`w-12 h-12 flex-col cursor-pointer rounded-full text-sm shadow-sm flex items-center justify-center font-[family-name:var(--font-handy)] ${
+                  isEditing
+                    ? "bg-green-200 text-black hover:bg-green-300"
+                    : "bg-white text-black hover:bg-gray-100"
+                }`}
+                title={isEditing ? "Done Editing" : "Edit Schedule"}
+              >
+                {isEditing ? (
+                  <IoCheckmark className="text-xs" />
+                ) : (
+                  <FiEdit2 className="text-[11px]" />
+                )}
+                <span className="text-xs text-gray-600">Edit</span>
+              </button>
+
+              <button
+                onClick={handleExportImage}
+                className="w-12 h-12 cursor-pointer rounded-full bg-white text-black hover:bg-gray-100 shadow-sm flex-col flex items-center justify-center font-[family-name:var(--font-handy)]"
+                title="Save Schedule as Image"
+              >
+                <CiSaveDown2 className="text-sm" />
+                <span className="text-xs text-gray-600">Save</span>
+              </button>
+            </div>
+
+            {selectedTheme === "blue" && <BlueThemeSchedule {...sharedProps} />}
+            {selectedTheme === "green" && (
+              <GreenThemeSchedule {...sharedProps} />
+            )}
+          </>
+        )}
+
+        {showThemeModal && (
+          <div className="fixed  inset-0 z-50 flex items-center justify-center bg-white/10 backdrop-blur-md p-4 ">
+            <div className="bg-white/30  border border-white/20 shadow-xl rounded-2xl p-6 w-full max-w-md backdrop-blur-md transition-all duration-300">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-semibold text-gray-700 font-[family-name:var(--font-handy)]">
+                  Choose a Schedule Theme
+                </h2>
                 <button
-                  onClick={() => setSchedule([])}
-                  className="w-12 cursor-pointer text-sm h-12 rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors duration-200 shadow-sm font-[family-name:var(--font-handy)]"
-                  title="Reset Schedule"
+                  onClick={() => setShowThemeModal(false)}
+                  className="text-gray-600 cursor-pointer hover:text-gray-800 transition"
+                  aria-label="Close"
                 >
-                  ↻
+                  <IoClose className="text-2xl" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button
+                  onClick={() => {
+                    setSelectedTheme("blue");
+                    setShowThemeModal(false);
+                  }}
+                  className="flex font-[family-name:var(--font-apricot)] items-center justify-center gap-2 px-5 cursor-pointer py-3 rounded-lg bg-gradient-to-tr text-xl  from-blue-300 to-blue-500 text-white font-medium hover:scale-[1.03] hover:shadow-lg transition-all duration-200"
+                >
+                  <FaPalette />
+                  Blue Theme
                 </button>
 
                 <button
                   onClick={() => {
-                    const editingNow = !isEditing;
-                    setIsEditing(editingNow);
-
-                    if (!editingNow) {
-                      toast.success("Schedule updated successfully!");
-                    }
+                    setSelectedTheme("green");
+                    setShowThemeModal(false);
                   }}
-                  className={`w-12  cursor-pointer h-12 rounded-full font-[family-name:var(--font-handy)] text-sm transition-colors duration-200 shadow-sm flex items-center justify-center
-      ${
-        isEditing
-          ? "bg-blue-200 text-blue-800 hover:bg-blue-200"
-          : "bg-blue-50 text-blue-700 hover:bg-blue-100"
-      }`}
-                  title={isEditing ? "Done Editing" : "Edit Schedule"}
+                  className="flex items-center cursor-pointer  font-[family-name:var(--font-handy)] text-xl justify-center gap-2 px-5 py-3 rounded-lg bg-gradient-to-tr from-green-300 to-green-500 text-black font-medium hover:scale-[1.03] hover:shadow-lg transition-all duration-200"
                 >
-                  {isEditing ? (
-                    <IoCheckmark className="text-xs" />
-                  ) : (
-                    <FiEdit2 className="text-[11px]" />
-                  )}
-                </button>
-
-                <button
-                  onClick={handleExportImage}
-                  className="w-12 cursor-pointer h-12 rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors duration-200 shadow-sm flex items-center justify-center font-[family-name:var(--font-handy)]"
-                  title="Save Schedule as Image"
-                >
-                  <CiSaveDown2 className="text-sm"/>
+                  <FaPalette />
+                  Green Theme
                 </button>
               </div>
-
-              {daysOfWeek
-                .filter((day) => grouped[day]?.length > 0)
-                .map((day) => (
-                  <div
-                    key={day}
-                    className="relative border border-blue-200 rounded-md bg-blue-50"
-                  >
-                    {/* Day Label */}
-                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-white px-10 py-1 rounded-full font-[family-name:var(--font-apricot)] font-semibold text-blue-800 border border-blue-200">
-                      {day}
-                    </div>
-
-                    {/* Entries */}
-                    <div
-                      // className="space-y-4  pt-6"
-                      className="flex flex-col gap-y-4 p-4 pt-6"
-                    >
-                      {grouped[day].length > 0 ? (
-                        <DndContext
-                          sensors={sensors}
-                          collisionDetection={closestCenter}
-                          onDragEnd={(event) => handleDragEnd(event, day)}
-                        >
-                          <SortableContext
-                            items={getItemsForDay(day)}
-                            strategy={verticalListSortingStrategy}
-                          >
-                            {grouped[day].map((item) => {
-                              const index = schedule.findIndex(
-                                (s) => s.id === item.id
-                              );
-
-                              return (
-                                <SortableItem
-                                  key={item.id}
-                                  item={item}
-                                  deleteScheduleEntry={deleteScheduleEntry}
-                                  index={index}
-                                  isEditing={isEditing}
-                                  moveEntry={moveEntry}
-                                  updateScheduleField={updateScheduleField}
-                                />
-                              );
-                            })}
-                          </SortableContext>
-                        </DndContext>
-                      ) : (
-                        <div className="text-gray-500 text-center italic font-[family-name:var(--font-sans)]">
-                          No classes
-                        </div>
-                      )}
-
-                      {isEditing && (
-                        <button
-                          onClick={() =>
-                            setSchedule((prev) => [
-                              ...prev,
-                              {
-                                id: Date.now().toString(),
-                                code: "",
-                                subject: "",
-                                day, // ← this ensures the entry goes to the correct day
-                                time: "",
-                                room: "",
-                                instructor: "TBA",
-                              },
-                            ])
-                          }
-                          className="mt-2 flex items-center justify-center gap-2 w-full rounded bg-blue-100 text-blue-700 cursor-pointer py-1 hover:bg-blue-200 transition-colors font-[family-name:var(--font-handy)]"
-                        >
-                          <IoMdAdd />
-                          Add class to {day}
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-            </section>
+            </div>
           </div>
         )}
       </div>
