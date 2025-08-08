@@ -25,24 +25,31 @@ export default function Home() {
         />
 
         <div className="z-10 text-center ">
-          <motion.h1
-            className="text-5xl font-extrabold font-[family-name:var(--font-apricot)] text-blue-700"
+          <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
+            className="space-y-5 2xl:space-y-8"
           >
-            UniSched
-          </motion.h1>
+            <h1 className="text-5xl 2xl:text-6xl font-extrabold  font-[family-name:var(--font-apricot)] text-blue-700">
+              UniSched
+            </h1>
+            <h1 className="text-5xl 2xl:text-6xl font-extrabold leading-18  font-[family-name:var(--font-apricot)] text-blue-700">
+              AI-Powered Class Scheduler
+            </h1>
+          </motion.div>
+
           <motion.p
-            className="mt-5 text-lg lg:text-xl text-blue-900 font-[family-name:var(--font-handy)]"
+            className="mt-5 md:mt-7 2xl:mt-8 2xl:text-2xl text-base md:text-xl text-blue-900 font-[family-name:var(--font-handy)]"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            Upload. Edit. Own your class schedule.
+            Upload your COR PDF and turn it into a clean schedule. <br /> Edit,
+            style, and save it your way.
           </motion.p>
           <motion.div
-            className="mt-7"
+            className="mt-5 md:mt-7 2xl:mt-8 flex justify-center gap-4"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
@@ -52,6 +59,12 @@ export default function Home() {
               href="/start"
             >
               Get Started
+            </Link>
+            <Link
+              className="px-6 py-3 font-[family-name:var(--font-handy)] tracking-widest border border-blue-600 text-lg text-blue-600 rounded-full hover:bg-blue-50 transition"
+              href="#universities"
+            >
+              Learn More
             </Link>
           </motion.div>
         </div>
@@ -74,21 +87,20 @@ export default function Home() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
           viewport={{ once: true }}
-          className="text-4xl font-extrabold font-[family-name:var(--font-apricot)] text-blue-700 mb-4"
+          className=" text-4xl md:text-5xl 
+  font-extrabold font-[family-name:var(--font-apricot)] text-blue-700 mb-6 md:mb-8"
         >
           Supported Universities
         </motion.h2>
-
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
           viewport={{ once: true }}
-          className="text-blue-900 text-lg  max-w-[250px] mx-auto  mb-6 font-[family-name:var(--font-handy)]"
+          className="text-blue-900   2xl:text-2xl text-lg md:text-xl  max-w-[300px] mx-auto mb-6  md:mb-8 font-[family-name:var(--font-handy)]"
         >
           These universities are currently supported by UniSched.
         </motion.p>
-
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -101,7 +113,7 @@ export default function Home() {
 
       {/* Themes Section */}
       <section
-        id="themes"
+        id="about"
         className="py-20 px-4 md:px-8 mx-auto text-center relative z-10"
       >
         <div
@@ -116,7 +128,8 @@ export default function Home() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
           viewport={{ once: true }}
-          className="text-4xl font-extrabold font-[family-name:var(--font-apricot)] text-blue-700 mb-6"
+          className="  text-4xl md:text-5xl
+ font-extrabold font-[family-name:var(--font-apricot)] text-blue-700 mb-6 md:mb-8"
         >
           Pick Your Style
         </motion.h2>
@@ -126,7 +139,7 @@ export default function Home() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
           viewport={{ once: true }}
-          className="text-blue-900 text-lg max-w-md mx-auto mb-8 font-[family-name:var(--font-handy)]"
+          className="text-blue-900   2xl:text-2xl text-base md:text-xl  max-w-md mx-auto mb-6 md:mb-8 font-[family-name:var(--font-handy)]"
         >
           Explore our available themes to personalize your class schedule. Pick
           your fave — the choice is yours.
@@ -174,7 +187,8 @@ export default function Home() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.3 }}
-          className="text-4xl font-extrabold font-[family-name:var(--font-apricot)] text-blue-700 mb-4"
+          className=" text-4xl md:text-5xl 
+ font-extrabold font-[family-name:var(--font-apricot)] text-blue-700 mb-6 md:mb-8"
         >
           Get in Touch
         </motion.h2>
@@ -183,7 +197,7 @@ export default function Home() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
           viewport={{ once: true }}
-          className="text-blue-900 text-lg  max-w-[250px] mx-auto  mb-8 font-[family-name:var(--font-handy)]"
+          className="text-blue-900 mb-8   2xl:text-2xl text-base md:text-xl  max-w-[350px] mx-auto  md:mb-8 font-[family-name:var(--font-handy)]"
         >
           Got questions, feedback, theme ideas, or want your university added?
           Let us know!

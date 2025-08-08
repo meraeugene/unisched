@@ -179,10 +179,10 @@ const GenerateSched = () => {
         {/* Title */}
         {schedule.length === 0 && !loading && (
           <div className=" text-blue-700 text-center  mb-0">
-            <h1 className="font-[family-name:var(--font-handy)]  text-5xl font-extrabold">
+            <h1 className="font-[family-name:var(--font-handy)]  text-5xl xl:text-6xl font-extrabold xl:mb-2">
               AI Schedule
             </h1>
-            <span className="text-blue-900 font-[family-name:var(--font-handy)] text-lg">
+            <span className="text-blue-900 font-[family-name:var(--font-handy)] text-lg xl:text-xl">
               {" "}
               Upload Your Class Schedule (PDF)
             </span>
@@ -209,7 +209,7 @@ const GenerateSched = () => {
               These are the supported class schedule formats (COR) you can
               upload.
             </p>
-            <p className="mt-4 text-xs font-[family-name:var(--font-sans)] text-gray-700 max-w-[250px] mx-auto  text-center">
+            <p className="mt-4 text-xs font-[family-name:var(--font-sans)] text-gray-700 max-w-[300x] mx-auto  text-center xl:text-sm">
               Please download the pdf before uploading.
             </p>
           </div>
@@ -224,21 +224,21 @@ const GenerateSched = () => {
                 viewBox="0 0 24 24"
               ></svg>
               {progress > 0 && (
-                <span className="font-[family-name:var(--font-handy)] text-lg absolute top-1/2 left-1/2  text-blue-700 transform -translate-x-1/2 -translate-y-1/2 font-semibold">
+                <span className="font-[family-name:var(--font-handy)] text-lg xl:text-xl absolute top-1/2 left-1/2  text-blue-700 transform -translate-x-1/2 -translate-y-1/2 font-semibold">
                   {progress}%
                 </span>
               )}
             </div>
-            <div className="text-center space-y-1">
-              <p className="font-medium text-xl animate-pulse  font-[family-name:var(--font-handy)]">
+            <div className="text-center space-y-1 xl:space-y-3">
+              <p className="font-medium text-xl animate-pulse xl:text-3xl font-[family-name:var(--font-handy)]">
                 {loadingMessage}
               </p>
 
-              <p className="font-medium text-xs mt-0 max-w-sm  text-blue-600  font-[family-name:var(--font-sans)]">
+              <p className="font-medium text-xs mt-0 max-w-sm  text-blue-600  font-[family-name:var(--font-sans)] xl:text-base mx-auto">
                 Please wait while we process your schedule.
               </p>
 
-              <p className="font-medium text-xs mt-2 max-w-xs  text-black/60 font-[family-name:var(--font-sans)]">
+              <p className="font-medium text-xs mt-2 max-w-md  xl:text-sm text-black/60 font-[family-name:var(--font-sans)]">
                 This schedule is AI-generated and may not be 100% accurate — but
                 don’t worry, you can review and edit it as needed.
               </p>
