@@ -25,22 +25,17 @@ export default function Home() {
         />
 
         <div className="z-10 text-center ">
-          <motion.div
+          <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="space-y-5 2xl:space-y-8"
+            className="text-5xl 2xl:text-6xl  font-extrabold  font-[family-name:var(--font-apricot)] text-blue-700"
           >
-            <h1 className="text-5xl 2xl:text-6xl font-extrabold  font-[family-name:var(--font-apricot)] text-blue-700">
-              UniSched
-            </h1>
-            <h1 className="text-5xl 2xl:text-6xl font-extrabold leading-18  font-[family-name:var(--font-apricot)] text-blue-700">
-              AI-Powered Class Scheduler
-            </h1>
-          </motion.div>
+            UniSched
+          </motion.h1>
 
           <motion.p
-            className="mt-5 md:mt-7 2xl:mt-8 2xl:text-2xl text-base md:text-xl text-blue-900 font-[family-name:var(--font-handy)]"
+            className="mt-6 md:mt-7 2xl:mt-8 2xl:text-2xl text-base md:text-xl text-blue-900 font-[family-name:var(--font-handy)]"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
@@ -49,7 +44,7 @@ export default function Home() {
             style, and save it your way.
           </motion.p>
           <motion.div
-            className="mt-5 md:mt-7 2xl:mt-8 flex justify-center gap-4"
+            className="mt-5 md:mt-6  flex  justify-center items-center gap-3 sm:gap-4"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
