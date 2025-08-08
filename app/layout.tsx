@@ -63,7 +63,7 @@ export default function RootLayout({
         />
         <meta
           property="og:image"
-          content="https://unisched.com/thumbnail.png"
+          content="https://raw.githubusercontent.com/meraeugene/unisched/refs/heads/main/public/thumbnail.png"
         />
 
         <meta property="twitter:card" content="summary_large_image" />
@@ -78,7 +78,7 @@ export default function RootLayout({
         />
         <meta
           property="twitter:image"
-          content="https://unisched.com/thumbnail.png"
+          content="https://raw.githubusercontent.com/meraeugene/unisched/refs/heads/main/public/thumbnail.png"
         />
       </head>
       <body
