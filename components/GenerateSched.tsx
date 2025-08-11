@@ -18,7 +18,7 @@ import { CiSaveDown2 } from "react-icons/ci";
 
 const GenerateSched = () => {
   const [schedule, setSchedule] = useState<ParsedSchedule[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
   const [progress, setProgress] = useState(0);
@@ -238,7 +238,7 @@ const GenerateSched = () => {
                 Please wait while we process your schedule.
               </p>
 
-              <p className="font-medium text-xs mt-2 max-w-md  xl:text-sm text-black/60 font-[family-name:var(--font-sans)]">
+              <p className="font-medium text-xs mt-2 max-w-xs md:max-w-md  xl:text-sm text-black/60 font-[family-name:var(--font-sans)]">
                 This schedule is AI-generated and may not be 100% accurate — but
                 don’t worry, you can review and edit it as needed.
               </p>
