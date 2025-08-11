@@ -18,7 +18,7 @@ import { CiSaveDown2 } from "react-icons/ci";
 
 const GenerateSched = () => {
   const [schedule, setSchedule] = useState<ParsedSchedule[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
   const [progress, setProgress] = useState(0);
